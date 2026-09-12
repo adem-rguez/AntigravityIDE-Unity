@@ -11,4 +11,5 @@ All notable changes to the `com.antigravity.ide` package will be documented in t
 - Automatic `.sln` and `.csproj` solution generation for Unity assemblies, Assembly Definitions (`.asmdef`), Packages, and Roslyn analyzers.
 - OS discovery for Antigravity IDE installations on Windows, macOS, and Linux.
 - Workspace configuration generator for `.vscode/settings.json` and `.vscode/launch.json` (Unity Attach Debugger).
+- 1-Click C# Language Extension installer integrated directly into Unity Preferences.
 - Preferences UI in Unity Preferences > External Tools for granular package project generation settings.

@@ -167,6 +167,26 @@ namespace Antigravity.Editor
             }
 
             EditorGUILayout.Space();
+            GUILayout.Label("C# Language Server & IntelliSense", EditorStyles.boldLabel);
+
+            var isInstalled = AntigravityExtensionInstaller.IsExtensionInstalled();
+            EditorGUILayout.HelpBox(
+                isInstalled
+                    ? "✓ C# Language Support extension is installed. Full IntelliSense, references, and Go-to-Definition are active."
+                    : "⚠ C# Language Support extension is missing. Click below to automatically install it into Antigravity IDE.",
+                isInstalled ? MessageType.Info : MessageType.Warning
+            );
+
+            using (new EditorGUI.DisabledScope(AntigravityExtensionInstaller.IsInstalling))
+            {
+                var buttonText = isInstalled ? "Reinstall / Update C# Language Support" : "Install C# Language Support (1-Click)";
+                if (GUILayout.Button(buttonText, GUILayout.Width(280)))
+                {
+                    AntigravityExtensionInstaller.InstallExtensionAsync();
+                }
+            }
+
+            EditorGUILayout.Space();
 
             if (GUILayout.Button("Regenerate Project Files (.sln / .csproj)", GUILayout.Width(280)))
             {

@@ -94,6 +94,7 @@ namespace Antigravity.Editor
 
             var extensionsContent = @"{
     ""recommendations"": [
+        ""muhammad-sammy.csharp"",
         ""ms-dotnettools.csharp"",
         ""visualstudiotoolsforunity.vstuc""
     ]

@@ -9,6 +9,7 @@ A modern, high-performance Unity Editor package providing seamless integration w
 
 ## Key Features
 
+- **1-Click C# Extension Auto-Installer**: Automatically detects and installs C# language support directly from Unity Preferences without manual marketplace searching or file downloads.
 - **Full Project Workspace Loading**: Opening any script opens the entire Unity project workspace instead of isolated single files.
 - **Accurate Code Navigation & IntelliSense**: Generates clean `.sln` and `.csproj` solution files targeting Unity assemblies, Assembly Definitions (`.asmdef`), Packages, Roslyn analyzers, and define symbols. Enables **Find All References**, **Go to Definition**, **Rename Symbol**, and type info out-of-the-box.
 - **Direct Script Jumping (`--goto`)**: Double-clicking compiler errors or scripts navigates straight to the exact line and column inside your active Antigravity IDE window without spawning duplicate instances.
