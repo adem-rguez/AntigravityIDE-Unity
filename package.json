@@ -1,0 +1,25 @@
+{
+  "name": "com.antigravity.ide",
+  "version": "1.0.0",
+  "displayName": "Antigravity IDE Editor Integration",
+  "description": "Seamless integration between Unity and Antigravity IDE. Provides accurate project and solution generation (.sln / .csproj), full C# IntelliSense support (Roslyn / OmniSharp / C# Dev Kit), automatic workspace setup, and direct file/line navigation.",
+  "unity": "2020.3",
+  "unityRelease": "0f1",
+  "keywords": [
+    "ide",
+    "antigravity",
+    "code",
+    "editor",
+    "csharp",
+    "intellisense",
+    "debugger"
+  ],
+  "author": {
+    "name": "Antigravity Community"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adem2/AntigravityIDE-Unity.git"
+  },
+  "type": "editor-extension"
+}
