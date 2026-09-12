@@ -26,6 +26,7 @@ namespace Antigravity.Editor
             var solutionName = $"{projectName}.sln";
 
             var settingsContent = $@"{{
+    ""omnisharp.solutionPath"": ""{solutionName}"",
     ""omnisharp.defaultSolution"": ""{solutionName}"",
     ""dotnet.defaultSolution"": ""{solutionName}"",
     ""omnisharp.useModernNet"": false,

@@ -199,6 +199,17 @@ MinimumVisualStudioVersion = 15.0.26124.0";
             solutionBuilder.AppendLine("EndGlobal");
 
             m_FileIO.WriteAllText(SolutionFile(), solutionBuilder.ToString());
+
+            // Remove any leftover .slnx files from Visual Studio integration that break OmniSharp
+            try
+            {
+                var slnxFiles = Directory.GetFiles(m_ProjectDirectory, "*.slnx");
+                foreach (var slnx in slnxFiles)
+                {
+                    File.Delete(slnx);
+                }
+            }
+            catch { }
         }
 
         private void SyncProject(Assembly assembly, List<Assembly> allAssemblies, List<UnityEditor.PackageManager.PackageInfo> allPackages)
