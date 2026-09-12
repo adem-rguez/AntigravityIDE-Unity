@@ -125,15 +125,27 @@ namespace Antigravity.Editor
         {
             try
             {
+                var cliPath = GetCliExecutablePath(editorPath);
                 var processInfo = new ProcessStartInfo
                 {
-                    FileName = editorPath,
-                    Arguments = arguments,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 };
+
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows &&
+                    (cliPath.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) || cliPath.EndsWith(".bat", StringComparison.OrdinalIgnoreCase)))
+                {
+                    processInfo.FileName = "cmd.exe";
+                    processInfo.Arguments = $"/c \"\"{cliPath}\" {arguments}\"";
+                }
+                else
+                {
+                    processInfo.FileName = cliPath;
+                    processInfo.Arguments = arguments;
+                }
 
                 using (var process = Process.Start(processInfo))
                 {
@@ -147,6 +159,62 @@ namespace Antigravity.Editor
                 Debug.LogWarning($"[Antigravity IDE] Command execution failed: {ex.Message}");
                 return false;
             }
+        }
+
+        private static string GetCliExecutablePath(string editorPath)
+        {
+            if (string.IsNullOrEmpty(editorPath))
+                return editorPath;
+
+            if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
+            {
+                var dir = Path.GetDirectoryName(editorPath);
+                if (!string.IsNullOrEmpty(dir))
+                {
+                    var candidates = new[]
+                    {
+                        Path.Combine(dir, "bin", "antigravity.cmd"),
+                        Path.Combine(dir, "bin", "code.cmd"),
+                        Path.Combine(dir, "resources", "app", "bin", "antigravity.cmd"),
+                        Path.Combine(dir, "resources", "app", "bin", "code.cmd")
+                    };
+
+                    foreach (var candidate in candidates)
+                    {
+                        if (File.Exists(candidate))
+                            return candidate;
+                    }
+                }
+            }
+            else if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+            {
+                if (editorPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase) || Directory.Exists(editorPath))
+                {
+                    var candidates = new[]
+                    {
+                        Path.Combine(editorPath, "Contents", "Resources", "app", "bin", "antigravity"),
+                        Path.Combine(editorPath, "Contents", "Resources", "app", "bin", "code")
+                    };
+
+                    foreach (var candidate in candidates)
+                    {
+                        if (File.Exists(candidate))
+                            return candidate;
+                    }
+                }
+            }
+            else if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Linux)
+            {
+                var dir = Path.GetDirectoryName(editorPath);
+                if (!string.IsNullOrEmpty(dir))
+                {
+                    var candidate = Path.Combine(dir, "bin", "antigravity");
+                    if (File.Exists(candidate))
+                        return candidate;
+                }
+            }
+
+            return editorPath;
         }
     }
 }
