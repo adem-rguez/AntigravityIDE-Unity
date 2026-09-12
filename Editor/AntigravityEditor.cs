@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Antigravity.Editor.ProjectGeneration;
 using UnityEditor;
-using UnityEditor.CodeEditor;
+using Unity.CodeEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 

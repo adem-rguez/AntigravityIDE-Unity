@@ -6,7 +6,7 @@ All notable changes to the `com.antigravity.ide` package will be documented in t
 
 ### Added
 - Initial release of the Antigravity IDE Editor Integration package for Unity.
-- Implementation of Unity's `UnityEditor.CodeEditor.IExternalCodeEditor` API.
+- Implementation of Unity's `Unity.CodeEditor.IExternalCodeEditor` API.
 - Full workspace loading with script and line jumping (`--goto` / `-r`).
 - Automatic `.sln` and `.csproj` solution generation for Unity assemblies, Assembly Definitions (`.asmdef`), Packages, and Roslyn analyzers.
 - OS discovery for Antigravity IDE installations on Windows, macOS, and Linux.
