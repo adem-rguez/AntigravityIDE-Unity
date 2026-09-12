@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
@@ -126,6 +127,7 @@ namespace Antigravity.Editor
             try
             {
                 var cliPath = GetCliExecutablePath(editorPath);
+                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 var processInfo = new ProcessStartInfo
                 {
                     UseShellExecute = false,
@@ -135,8 +137,7 @@ namespace Antigravity.Editor
                     RedirectStandardError = true
                 };
 
-                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows &&
-                    (cliPath.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) || cliPath.EndsWith(".bat", StringComparison.OrdinalIgnoreCase)))
+                if (isWindows && (cliPath.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) || cliPath.EndsWith(".bat", StringComparison.OrdinalIgnoreCase)))
                 {
                     processInfo.FileName = "cmd.exe";
                     processInfo.Arguments = $"/c \"\"{cliPath}\" {arguments}\"";
@@ -166,7 +167,7 @@ namespace Antigravity.Editor
             if (string.IsNullOrEmpty(editorPath))
                 return editorPath;
 
-            if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 var dir = Path.GetDirectoryName(editorPath);
                 if (!string.IsNullOrEmpty(dir))
@@ -186,7 +187,7 @@ namespace Antigravity.Editor
                     }
                 }
             }
-            else if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX)
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 if (editorPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase) || Directory.Exists(editorPath))
                 {
@@ -203,7 +204,7 @@ namespace Antigravity.Editor
                     }
                 }
             }
-            else if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Linux)
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 var dir = Path.GetDirectoryName(editorPath);
                 if (!string.IsNullOrEmpty(dir))
