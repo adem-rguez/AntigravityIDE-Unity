@@ -16,19 +16,26 @@ namespace Antigravity.Editor
 
             GenerateSettingsJson(vscodeDir);
             GenerateLaunchJson(vscodeDir);
+            GenerateExtensionsJson(vscodeDir);
         }
 
         private static void GenerateSettingsJson(string vscodeDir)
         {
             var settingsPath = Path.Combine(vscodeDir, "settings.json");
             if (File.Exists(settingsPath))
-                return; // Do not overwrite user's custom settings if already created
+                return;
 
             var settingsContent = @"{
     ""dotnet.defaultSolution"": ""auto"",
-    ""omnisharp.useModernNet"": true,
+    ""omnisharp.useModernNet"": false,
     ""omnisharp.enableRoslynAnalyzers"": true,
     ""omnisharp.enableEditorConfigSupport"": true,
+    ""omnisharp.autoStart"": true,
+    ""csharp.referencesCodeLens.enabled"": true,
+    ""csharp.implementationsCodeLens.enabled"": true,
+    ""csharp.showReferencesAtDeclaration"": true,
+    ""csharp.inlayHints.csharpAll"": true,
+    ""editor.codeLens"": true,
     ""csharp.semanticHighlighting.enabled"": true,
     ""files.exclude"": {
         ""**/.git"": true,
@@ -59,7 +66,7 @@ namespace Antigravity.Editor
         {
             var launchPath = Path.Combine(vscodeDir, "launch.json");
             if (File.Exists(launchPath))
-                return; // Do not overwrite if already created
+                return;
 
             var launchContent = @"{
     ""version"": ""0.2.0"",
@@ -77,6 +84,21 @@ namespace Antigravity.Editor
     ]
 }";
             File.WriteAllText(launchPath, launchContent, Encoding.UTF8);
+        }
+
+        private static void GenerateExtensionsJson(string vscodeDir)
+        {
+            var extensionsPath = Path.Combine(vscodeDir, "extensions.json");
+            if (File.Exists(extensionsPath))
+                return;
+
+            var extensionsContent = @"{
+    ""recommendations"": [
+        ""ms-dotnettools.csharp"",
+        ""visualstudiotoolsforunity.vstuc""
+    ]
+}";
+            File.WriteAllText(extensionsPath, extensionsContent, Encoding.UTF8);
         }
     }
 }

@@ -228,6 +228,8 @@ MinimumVisualStudioVersion = 15.0.26124.0";
 
             var projectAssemblyNames = new HashSet<string>(allAssemblies.Select(a => a.name));
 
+            var addedReferenceNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var assemblyRef in assembly.assemblyReferences)
             {
                 if (projectAssemblyNames.Contains(assemblyRef.name))
@@ -237,6 +239,7 @@ MinimumVisualStudioVersion = 15.0.26124.0";
       <Project>{{{refGuid}}}</Project>
       <Name>{assemblyRef.name}</Name>
     </ProjectReference>");
+                    addedReferenceNames.Add(assemblyRef.name);
                 }
                 else if (!string.IsNullOrEmpty(assemblyRef.outputPath))
                 {
@@ -244,16 +247,26 @@ MinimumVisualStudioVersion = 15.0.26124.0";
                     assemblyReferencesBuilder.AppendLine($@"    <Reference Include=""{assemblyRef.name}"">
       <HintPath>{EscapeXml(normalizedPath)}</HintPath>
     </Reference>");
+                    addedReferenceNames.Add(assemblyRef.name);
                 }
             }
 
-            foreach (var compiledRef in assembly.compiledAssemblyReferences)
+            var allDllReferences = (assembly.allReferences ?? Array.Empty<string>())
+                .Concat(assembly.compiledAssemblyReferences ?? Array.Empty<string>());
+
+            foreach (var dllRef in allDllReferences)
             {
-                var refName = Path.GetFileNameWithoutExtension(compiledRef);
-                var normalizedPath = NormalizePath(compiledRef);
-                assemblyReferencesBuilder.AppendLine($@"    <Reference Include=""{refName}"">
+                if (string.IsNullOrEmpty(dllRef))
+                    continue;
+
+                var refName = Path.GetFileNameWithoutExtension(dllRef);
+                if (addedReferenceNames.Add(refName))
+                {
+                    var normalizedPath = NormalizePath(dllRef);
+                    assemblyReferencesBuilder.AppendLine($@"    <Reference Include=""{refName}"">
       <HintPath>{EscapeXml(normalizedPath)}</HintPath>
     </Reference>");
+                }
             }
 
             var analyzersBuilder = new StringBuilder();
