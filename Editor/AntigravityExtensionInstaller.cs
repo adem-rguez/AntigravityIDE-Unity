@@ -126,8 +126,6 @@ namespace Antigravity.Editor
         {
             try
             {
-                var cliPath = GetCliExecutablePath(editorPath);
-                var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 var processInfo = new ProcessStartInfo
                 {
                     UseShellExecute = false,
@@ -137,14 +135,27 @@ namespace Antigravity.Editor
                     RedirectStandardError = true
                 };
 
-                if (isWindows && (cliPath.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) || cliPath.EndsWith(".bat", StringComparison.OrdinalIgnoreCase)))
+                // Prevent Electron from opening GUI window
+                processInfo.EnvironmentVariables["ELECTRON_RUN_AS_NODE"] = "1";
+                processInfo.EnvironmentVariables["ELECTRON_NO_ATTACH_CONSOLE"] = "1";
+
+                var cliJsPath = FindCliJsPath(editorPath);
+                var cmdPath = FindCmdScriptPath(editorPath);
+
+                if (!string.IsNullOrEmpty(cliJsPath))
+                {
+                    // Direct Node invocation via Electron binary - 100% headless, guaranteed no window
+                    processInfo.FileName = editorPath;
+                    processInfo.Arguments = $"\"{cliJsPath}\" {arguments}";
+                }
+                else if (!string.IsNullOrEmpty(cmdPath) && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     processInfo.FileName = "cmd.exe";
-                    processInfo.Arguments = $"/c \"\"{cliPath}\" {arguments}\"";
+                    processInfo.Arguments = $"/c \"\"{cmdPath}\" {arguments}\"";
                 }
                 else
                 {
-                    processInfo.FileName = cliPath;
+                    processInfo.FileName = editorPath;
                     processInfo.Arguments = arguments;
                 }
 
@@ -162,60 +173,57 @@ namespace Antigravity.Editor
             }
         }
 
-        private static string GetCliExecutablePath(string editorPath)
+        private static string FindCliJsPath(string editorPath)
         {
             if (string.IsNullOrEmpty(editorPath))
-                return editorPath;
+                return null;
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                var dir = Path.GetDirectoryName(editorPath);
-                if (!string.IsNullOrEmpty(dir))
-                {
-                    var candidates = new[]
-                    {
-                        Path.Combine(dir, "bin", "antigravity.cmd"),
-                        Path.Combine(dir, "bin", "code.cmd"),
-                        Path.Combine(dir, "resources", "app", "bin", "antigravity.cmd"),
-                        Path.Combine(dir, "resources", "app", "bin", "code.cmd")
-                    };
+            var dir = Directory.Exists(editorPath) ? editorPath : Path.GetDirectoryName(editorPath);
+            if (string.IsNullOrEmpty(dir))
+                return null;
 
-                    foreach (var candidate in candidates)
-                    {
-                        if (File.Exists(candidate))
-                            return candidate;
-                    }
-                }
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            var candidates = new[]
             {
-                if (editorPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase) || Directory.Exists(editorPath))
-                {
-                    var candidates = new[]
-                    {
-                        Path.Combine(editorPath, "Contents", "Resources", "app", "bin", "antigravity"),
-                        Path.Combine(editorPath, "Contents", "Resources", "app", "bin", "code")
-                    };
+                Path.Combine(dir, "resources", "app", "out", "cli.js"),
+                Path.Combine(dir, "Contents", "Resources", "app", "out", "cli.js"),
+                Path.Combine(dir, "..", "resources", "app", "out", "cli.js"),
+                Path.Combine(dir, "app", "out", "cli.js")
+            };
 
-                    foreach (var candidate in candidates)
-                    {
-                        if (File.Exists(candidate))
-                            return candidate;
-                    }
-                }
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            foreach (var candidate in candidates)
             {
-                var dir = Path.GetDirectoryName(editorPath);
-                if (!string.IsNullOrEmpty(dir))
-                {
-                    var candidate = Path.Combine(dir, "bin", "antigravity");
-                    if (File.Exists(candidate))
-                        return candidate;
-                }
+                if (File.Exists(candidate))
+                    return Path.GetFullPath(candidate);
             }
 
-            return editorPath;
+            return null;
+        }
+
+        private static string FindCmdScriptPath(string editorPath)
+        {
+            if (string.IsNullOrEmpty(editorPath))
+                return null;
+
+            var dir = Directory.Exists(editorPath) ? editorPath : Path.GetDirectoryName(editorPath);
+            if (string.IsNullOrEmpty(dir))
+                return null;
+
+            var candidates = new[]
+            {
+                Path.Combine(dir, "bin", "antigravity.cmd"),
+                Path.Combine(dir, "bin", "code.cmd"),
+                Path.Combine(dir, "resources", "app", "bin", "antigravity.cmd"),
+                Path.Combine(dir, "resources", "app", "bin", "code.cmd"),
+                Path.Combine(dir, "..", "bin", "antigravity.cmd")
+            };
+
+            foreach (var candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                    return Path.GetFullPath(candidate);
+            }
+
+            return null;
         }
     }
 }
