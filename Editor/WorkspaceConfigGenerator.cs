@@ -14,19 +14,20 @@ namespace Antigravity.Editor
                 Directory.CreateDirectory(vscodeDir);
             }
 
-            GenerateSettingsJson(vscodeDir);
+            GenerateSettingsJson(vscodeDir, projectDirectory);
             GenerateLaunchJson(vscodeDir);
             GenerateExtensionsJson(vscodeDir);
         }
 
-        private static void GenerateSettingsJson(string vscodeDir)
+        private static void GenerateSettingsJson(string vscodeDir, string projectDirectory)
         {
             var settingsPath = Path.Combine(vscodeDir, "settings.json");
-            if (File.Exists(settingsPath))
-                return;
+            var projectName = Path.GetFileName(projectDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+            var solutionName = $"{projectName}.sln";
 
-            var settingsContent = @"{
-    ""dotnet.defaultSolution"": ""auto"",
+            var settingsContent = $@"{{
+    ""omnisharp.defaultSolution"": ""{solutionName}"",
+    ""dotnet.defaultSolution"": ""{solutionName}"",
     ""omnisharp.useModernNet"": false,
     ""omnisharp.enableRoslynAnalyzers"": true,
     ""omnisharp.enableEditorConfigSupport"": true,
@@ -37,7 +38,7 @@ namespace Antigravity.Editor
     ""csharp.inlayHints.csharpAll"": true,
     ""editor.codeLens"": true,
     ""csharp.semanticHighlighting.enabled"": true,
-    ""files.exclude"": {
+    ""files.exclude"": {{
         ""**/.git"": true,
         ""**/.svn"": true,
         ""**/.hg"": true,
@@ -48,17 +49,17 @@ namespace Antigravity.Editor
         ""**/*.unityproj"": true,
         ""**/*.mat"": false,
         ""**/*.prefab"": false
-    },
+    }},
     ""explorer.fileNesting.enabled"": true,
     ""explorer.fileNesting.expand"": false,
-    ""explorer.fileNesting.patterns"": {
+    ""explorer.fileNesting.patterns"": {{
         ""*.cs"": ""$(capture).cs.meta"",
         ""*.prefab"": ""$(capture).prefab.meta"",
         ""*.mat"": ""$(capture).mat.meta"",
         ""*.asset"": ""$(capture).asset.meta"",
         ""*.unity"": ""$(capture).unity.meta""
-    }
-}";
+    }}
+}}";
             File.WriteAllText(settingsPath, settingsContent, Encoding.UTF8);
         }
 

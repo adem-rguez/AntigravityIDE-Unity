@@ -216,7 +216,7 @@ namespace Antigravity.Editor
             var lineArg = line > 0 ? line : 1;
             var colArg = column > 0 ? column : 1;
 
-            return $"\"{projectDir}\" -r -g \"{fullPath}:{lineArg}:{colArg}\"";
+            return $"\"{projectDir}\" -g \"{fullPath}:{lineArg}:{colArg}\"";
         }
     }
 }
