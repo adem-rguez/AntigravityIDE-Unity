@@ -313,12 +313,6 @@ MinimumVisualStudioVersion = 15.0.26124.0";
 
         private string GetNullableSetting(Assembly assembly)
         {
-#if UNITY_2020_2_OR_NEWER
-            if (assembly.compilerOptions.Nullable != null)
-            {
-                return assembly.compilerOptions.Nullable.ToString().ToLowerInvariant();
-            }
-#endif
             return "disable";
         }
 

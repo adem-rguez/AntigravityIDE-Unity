@@ -24,7 +24,7 @@ namespace Antigravity.Editor
                 case OperatingSystemFamily.Windows:
                     FindWindowsInstallations(installations, pathsChecked);
                     break;
-                case OperatingSystemFamily.MacOS:
+                case OperatingSystemFamily.MacOSX:
                     FindMacInstallations(installations, pathsChecked);
                     break;
                 case OperatingSystemFamily.Linux:

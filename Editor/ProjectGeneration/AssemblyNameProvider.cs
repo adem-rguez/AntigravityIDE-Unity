@@ -12,7 +12,7 @@ namespace Antigravity.Editor.ProjectGeneration
     {
         private ProjectGenerationFlag m_ProjectGenerationFlag = (ProjectGenerationFlag)0x7FFFFFFF;
 
-        public string[] ProjectSupportedExtensions => EditorSettings.projectGenerationBuiltinextensions;
+        public string[] ProjectSupportedExtensions => EditorSettings.projectGenerationBuiltinExtensions ?? Array.Empty<string>();
 
         public string ProjectGenerationRootNamespace => EditorSettings.projectGenerationRootNamespace;
 

@@ -115,7 +115,7 @@ namespace Antigravity.Editor
                 };
 
                 // On macOS if path is a .app bundle, use 'open' command
-                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOS && editorPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase))
+                if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX && editorPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase))
                 {
                     startInfo.FileName = "open";
                     startInfo.Arguments = $"-n -b com.google.antigravity --args {arguments}";
