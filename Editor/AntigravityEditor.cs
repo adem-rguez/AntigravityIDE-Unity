@@ -85,6 +85,14 @@ namespace Antigravity.Editor
 
         public bool OpenProject(string filePath = "", int line = -1, int column = -1)
         {
+            // Only handle code files in the external IDE.
+            // Return false for anything else (scenes, prefabs, etc.)
+            // so Unity falls back to its native handling (e.g. loads the scene).
+            if (!string.IsNullOrEmpty(filePath) && !IsCodeFile(filePath))
+            {
+                return false;
+            }
+
             var editorPath = CodeEditor.CurrentEditorInstallation;
             if (string.IsNullOrEmpty(editorPath))
             {
@@ -202,6 +210,32 @@ namespace Antigravity.Editor
             {
                 provider.ToggleProjectGeneration(flag);
             }
+        }
+
+        private bool IsCodeFile(string filePath)
+        {
+            // Delegate to project generation first so Unity's
+            // EditorSettings.projectGenerationBuiltinExtensions are respected.
+            try
+            {
+                if (m_ProjectGeneration != null && m_ProjectGeneration.IsSupportedFile(filePath))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                // Fall through to static list check
+            }
+
+            var extension = Path.GetExtension(filePath);
+            if (string.IsNullOrEmpty(extension))
+            {
+                return false;
+            }
+
+            extension = extension.TrimStart('.').ToLowerInvariant();
+            return k_SupportedExtensions.Contains(extension);
         }
 
         private string BuildArguments(string projectDir, string filePath, int line, int column)
